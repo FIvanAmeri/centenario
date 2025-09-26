@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Estado de tu solicitud</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 0;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+      .header {
+        background-color: #005c99;
+        padding: 20px;
+        text-align: center;
+      }
+      .header img {
+        max-width: 100px;
+        margin-bottom: 10px;
+      }
+      .header h1 {
+        color: #fff;
+        font-size: 22px;
+        margin: 0;
+      }
+      .body {
+        padding: 30px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .footer {
+        background-color: #f0f0f0;
+        padding: 20px;
+        font-size: 14px;
+        text-align: center;
+        color: #777;
+      }
+      a {
+        color: #005c99;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="https://hospitalcentenario.gov.ar/uploads/centenario.webp" alt="Hospital Centenario" />
+        <h1>Estado de tu solicitud</h1>
+      </div>
+      <div class="body">
+        <p>Hola,</p>
+        <p>
+          Tu solicitud ha sido
+          {{#if aprobado}}
+            <strong>aprobada</strong>
+          {{else}}
+            <strong>rechazada</strong>
+          {{/if}} luego de ser evaluada por el equipo institucional del Hospital Centenario.
+        </p>
+        <p>
+          Si tenés alguna consulta o necesitás más información, <a href="mailto:dark.ranked@gmail.com">escribinos</a>.
+        </p>
+      </div>
+      <div class="footer">
+        Hospital Centenario · Urquiza 3101 · Rosario · Santa Fe · Argentina
+      </div>
+    </div>
+  </body>
+</html>

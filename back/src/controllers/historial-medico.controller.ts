@@ -1,6 +1,14 @@
-import { Controller, Post, Body, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { HistoriaClinicaService } from '../services/historia-clinica.service';
 import { CrearHistorialDto } from '../dtos/crear-historial.dto';
+import { EditarHistorialDto } from '../dtos/editar-historial.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Rol } from '../entities/rol.enum';
@@ -14,7 +22,7 @@ export class HistorialMedicoController {
   @Post(':pacienteId')
   async agregarRegistro(
     @Param('pacienteId') pacienteId: number,
-    @Body() dto: CrearHistorialDto
+    @Body() dto: CrearHistorialDto,
   ) {
     return this.historiaService.agregarRegistro(pacienteId, dto);
   }
@@ -24,5 +32,16 @@ export class HistorialMedicoController {
   @Patch('firmar/:registroId')
   async firmar(@Param('registroId') registroId: number) {
     return this.historiaService.firmarRegistro(registroId);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Rol.MEDICO)
+  @Patch('editar/:registroId/:medicoId')
+  async editarRegistro(
+    @Param('registroId') registroId: number,
+    @Param('medicoId') medicoId: number,
+    @Body() dto: EditarHistorialDto,
+  ) {
+    return this.historiaService.editarRegistro(registroId, medicoId, dto);
   }
 }

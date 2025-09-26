@@ -27,7 +27,6 @@ export class TurnoService {
     const medico = await this.userRepo.findOne({ where: { id: dto.medicoId } });
     if (!medico) throw new NotFoundException('Médico no encontrado');
 
-    // dto.fecha ya es un objeto Date (gracias a @Type y ValidationPipe)
     const dia = dto.fecha.toLocaleDateString('es-AR', {
       weekday: 'long',
     }).toLowerCase();
@@ -44,18 +43,29 @@ export class TurnoService {
       throw new BadRequestException('El turno está fuera del horario permitido');
     }
 
+    const existeTurno = await this.turnoRepo.findOne({
+      where: {
+        paciente: { id: dto.pacienteId },
+        fecha: dto.fecha,
+        hora: dto.hora,
+      },
+    });
+
+    if (existeTurno) {
+      throw new BadRequestException('Ya existe un turno para ese paciente en esa fecha y hora');
+    }
+
     const turno = this.turnoRepo.create({
-      fecha: dto.fecha, // Asignación directa de Date
+      fecha: dto.fecha,
       hora: dto.hora,
       paciente,
       medico,
-      estado: EstadoTurno.CONFIRMADO,
+      estado: EstadoTurno.AGENDADO,
     });
 
-    // Usamos toISOString para enviar la fecha como string al servicio de correo
     await this.mailService.enviarConfirmacionTurno(
       paciente.email,
-      dto.fecha.toISOString().split('T')[0], 
+      dto.fecha.toISOString().split('T')[0],
       dto.hora,
       medico.nombre,
       medico.rol,
@@ -80,12 +90,11 @@ export class TurnoService {
     });
     if (!turno) throw new NotFoundException('Turno no encontrado');
 
-    // SOLUCIÓN: Convertir el objeto Date (turno.fecha) a string
-    const fechaParaCorreo = turno.fecha.toLocaleDateString('es-AR'); 
+    const fechaParaCorreo = turno.fecha.toLocaleDateString('es-AR');
 
     await this.mailService.notificarCancelacionTurno(
       turno.paciente.email,
-      fechaParaCorreo, // <-- ¡CORREGIDO! Se pasa la fecha como string
+      fechaParaCorreo,
       motivo,
     );
 
@@ -93,8 +102,52 @@ export class TurnoService {
     return { mensaje: 'Turno cancelado y liberado' };
   }
 
+  async confirmarTurno(id: number): Promise<Turno> {
+    const turno = await this.turnoRepo.findOne({ where: { id } });
+    if (!turno) throw new NotFoundException('Turno no encontrado');
+
+    if (turno.estado !== EstadoTurno.AGENDADO) {
+      throw new BadRequestException('Solo se pueden confirmar turnos que estén agendados');
+    }
+
+    turno.estado = EstadoTurno.CONFIRMADO;
+    return this.turnoRepo.save(turno);
+  }
+
   async listarPorMedico(id: number): Promise<Turno[]> {
-    return this.turnoRepo.find({ where: { medico: { id } } });
+    return this.turnoRepo.find({
+      where: { medico: { id } },
+      relations: ['paciente'],
+      order: { fecha: 'ASC', hora: 'ASC' },
+    });
+  }
+
+  async listarTodosPorFecha(fecha: Date): Promise<Turno[]> {
+    const inicio = new Date(fecha);
+    inicio.setHours(0, 0, 0, 0);
+
+    const fin = new Date(fecha);
+    fin.setHours(23, 59, 59, 999);
+
+    return this.turnoRepo.find({
+      where: { fecha: Between(inicio, fin) },
+      relations: ['paciente', 'medico'],
+      order: { hora: 'ASC' },
+    });
+  }
+
+  async listarTodosPorRango(desde: Date, hasta: Date): Promise<Turno[]> {
+    const inicio = new Date(desde);
+    inicio.setHours(0, 0, 0, 0);
+
+    const fin = new Date(hasta);
+    fin.setHours(23, 59, 59, 999);
+
+    return this.turnoRepo.find({
+      where: { fecha: Between(inicio, fin) },
+      relations: ['paciente', 'medico'],
+      order: { fecha: 'ASC', hora: 'ASC' },
+    });
   }
 
   async obtenerTurnosEn48Horas(): Promise<Turno[]> {

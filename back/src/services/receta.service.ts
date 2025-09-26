@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CrearRecetaDto } from '../dtos/crear-receta.dto';
 import { User } from '../entities/user.entity';
 import { Medicamento } from '../entities/medicamento.entity';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class RecetaService {
@@ -12,6 +13,7 @@ export class RecetaService {
     @InjectRepository(Receta) private recetaRepo: Repository<Receta>,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Medicamento) private medRepo: Repository<Medicamento>,
+    private readonly mailService: MailService,
   ) {}
 
   async crearReceta(dto: CrearRecetaDto) {
@@ -20,21 +22,50 @@ export class RecetaService {
 
     if (!medico || !paciente) throw new NotFoundException('Usuario no encontrado');
 
+    const medicamentos = dto.medicamentos.map((m) => this.medRepo.create(m));
+
     const receta = this.recetaRepo.create({
-      fecha: dto.fecha,
+      fecha: new Date(dto.fecha),
       medico,
       paciente,
-      medicamentos: dto.medicamentos.map((m) => this.medRepo.create(m)),
+      medicamentos,
+      descripcion: 'Receta médica generada por el sistema',
     });
 
-    return this.recetaRepo.save(receta);
+    const recetaGuardada = await this.recetaRepo.save(receta);
+
+    await this.mailService.enviarRecetaVirtual(
+      paciente.email,
+      paciente.nombre,
+      medico.nombre,
+      recetaGuardada.fecha.toLocaleDateString('es-AR'),
+      dto.medicamentos,
+      recetaGuardada.firmada,
+    );
+
+    return recetaGuardada;
   }
 
   async firmarReceta(id: number) {
-    const receta = await this.recetaRepo.findOne({ where: { id } });
+    const receta = await this.recetaRepo.findOne({
+      where: { id },
+      relations: ['paciente', 'medico', 'medicamentos'],
+    });
+
     if (!receta) throw new NotFoundException('Receta no encontrada');
 
     receta.firmada = true;
-    return this.recetaRepo.save(receta);
+    const recetaFirmada = await this.recetaRepo.save(receta);
+
+    await this.mailService.enviarRecetaVirtual(
+      receta.paciente.email,
+      receta.paciente.nombre,
+      receta.medico.nombre,
+      receta.fecha.toLocaleDateString('es-AR'),
+      receta.medicamentos,
+      receta.firmada,
+    );
+
+    return recetaFirmada;
   }
 }

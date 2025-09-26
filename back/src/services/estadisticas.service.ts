@@ -21,9 +21,10 @@ export class EstadisticasService {
   async turnosPorEspecialidad() {
     return this.turnoRepo
       .createQueryBuilder('turno')
-      .select('turno.especialidad', 'especialidad')
+      .leftJoin('turno.medico', 'medico')
+      .select('medico.especialidad', 'especialidad')
       .addSelect('COUNT(*)', 'cantidad')
-      .groupBy('turno.especialidad')
+      .groupBy('medico.especialidad')
       .orderBy('cantidad', 'DESC')
       .getRawMany();
   }

@@ -10,6 +10,9 @@ class MedicamentoDto {
 
   @IsString()
   frecuencia: string;
+
+  @IsString()
+  via: string;
 }
 
 export class CrearRecetaDto {

@@ -62,29 +62,74 @@ export class MailService {
       context: { nuevaFecha, nuevaHora, medico, motivo },
     });
   }
-  
-  // NUEVO MÉTODO PARA RECORDATORIO
+
   async enviarRecordatorioTurno(
     email: string,
     nombrePaciente: string,
-    fecha: Date, // Recibimos Date del servicio
+    fecha: Date,
     hora: string,
     medico: string,
-    especialidad: string, 
+    especialidad: string,
   ) {
-    // Convertimos Date a un string amigable para el correo
-    const fechaString = fecha.toLocaleDateString('es-AR'); 
+    const fechaString = fecha.toLocaleDateString('es-AR');
 
     await this.mailerService.sendMail({
       to: email,
       subject: 'Recordatorio de turno',
-      template: 'emails/recordatorio-turno', 
-      context: { 
-          nombre: nombrePaciente, 
-          fecha: fechaString, 
-          hora, 
-          medico, 
-          especialidad 
+      template: 'emails/recordatorio-turno',
+      context: {
+        nombre: nombrePaciente,
+        fecha: fechaString,
+        hora,
+        medico,
+        especialidad,
+      },
+    });
+  }
+
+  async enviarRecetaVirtual(
+    email: string,
+    paciente: string,
+    medico: string,
+    fecha: string,
+    medicamentos: { nombre: string; dosis: string; frecuencia: string }[],
+    firmada: boolean,
+  ) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Receta médica digital - Hospital Centenario',
+      template: 'receta-virtual',
+      context: {
+        paciente,
+        medico,
+        fecha,
+        medicamentos,
+        firmada,
+      },
+    });
+  }
+
+  async enviarHistoriaClinicaExportada(
+    email: string,
+    paciente: string,
+    fechaExportacion: string,
+    registros: {
+      fecha: string;
+      motivoConsulta: string;
+      diagnostico: string;
+      tratamiento: string;
+      medico: string;
+      firmado: boolean;
+    }[],
+  ) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Exportación de historia clínica - Hospital Centenario',
+      template: 'historia-clinica-exportada',
+      context: {
+        paciente,
+        fechaExportacion,
+        registros,
       },
     });
   }

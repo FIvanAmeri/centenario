@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { HistoriaClinica } from './historia-clinica.entity';
 import { User } from './user.entity';
 
@@ -24,6 +31,15 @@ export class HistorialMedico {
 
   @Column({ type: 'timestamp', nullable: true })
   fechaFirma: Date;
+
+  @CreateDateColumn()
+  fechaCreacion: Date;
+
+  @UpdateDateColumn({ nullable: true })
+  fechaEdicion: Date;
+
+  @Column({ default: false })
+  editado: boolean;
 
   @ManyToOne(() => User)
   medico: User;

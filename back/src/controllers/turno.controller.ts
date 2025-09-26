@@ -3,7 +3,7 @@ import { TurnoService } from '../services/turno.service';
 import { CrearTurnoDto } from '../dtos/crear-turno.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { Rol } from '../entities/rol.enum'; 
+import { Rol } from '../entities/rol.enum';
 
 @Controller('turnos')
 export class TurnoController {
@@ -32,8 +32,29 @@ export class TurnoController {
 
   @UseGuards(RolesGuard)
   @Roles(Rol.MEDICO)
+  @Patch('confirmar/:id')
+  async confirmarTurno(@Param('id') id: number) {
+    return this.turnoService.confirmarTurno(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Rol.MEDICO)
   @Get('medico/:id')
   async listarPorMedico(@Param('id') id: number) {
     return this.turnoService.listarPorMedico(id);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Rol.ADMINISTRATIVO, Rol.SUPERADMIN)
+  @Get('administrativo/fecha/:fecha')
+  async listarTodosPorFecha(@Param('fecha') fecha: string) {
+    return this.turnoService.listarTodosPorFecha(new Date(fecha));
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Rol.ADMINISTRATIVO, Rol.SUPERADMIN)
+  @Post('administrativo/rango')
+  async listarTodosPorRango(@Body('desde') desde: string, @Body('hasta') hasta: string) {
+    return this.turnoService.listarTodosPorRango(new Date(desde), new Date(hasta));
   }
 }

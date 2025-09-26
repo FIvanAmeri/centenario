@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Paciente {
@@ -20,23 +25,29 @@ export class Paciente {
   @Column()
   fechaNacimiento: Date;
 
+  @Column({ type: 'int' })
+  edad: number;
+
   @Column({ nullable: true })
   domicilio: string;
 
+  @Column()
+pais: string;
+
   @Column({ nullable: true })
   localidad: string;
+
+  @Column({ nullable: true })
+  provincia: string;
+
+  @Column({ nullable: true })
+  barrio: string;
 
   @Column({ nullable: true })
   telefono: string;
 
   @Column({ nullable: true })
   email: string;
-
-  @Column({ nullable: true })
-  obraSocial: string;
-
-  @Column({ nullable: true })
-  numeroAfiliado: string;
 
   @Column({ nullable: true })
   grupoSanguineo: string;
@@ -57,7 +68,10 @@ export class Paciente {
   nacionalidad: string;
 
   @Column({ nullable: true })
-  estadoCivil: string;
+  estadoCivil: 'soltera' | 'casada' | 'en pareja';
+
+  @Column({ nullable: true })
+  cantidadHijos: number;
 
   @CreateDateColumn()
   creadoEn: Date;

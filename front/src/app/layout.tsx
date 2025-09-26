@@ -1,6 +1,10 @@
-import "@/styles/globals.css";
-import RoleSwitcher from "@/components/dashboard/RoleSwitcher";
-import Sidebar from "@/components/dashboard/Sidebar";
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "Hospital Centenario",
+  description: "Sistema de gestión institucional",
+};
 
 export default function RootLayout({
   children,
@@ -8,13 +12,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className="bg-gray-100 text-gray-900">
-        <RoleSwitcher />
-        <div className="flex">
-          <Sidebar />
-          <main className="flex-1 p-6">{children}</main>
-        </div>
+    <html lang="es" className="w-full h-full">
+      <body
+        className="min-h-screen w-full h-full 
+                   /* 🚨 PRUEBA DE DIAGNÓSTICO: GRADIENTE AZUL A ROJO 🚨 */
+                   bg-gradient-to-br from-blue-500 to-red-500 
+                   flex items-center justify-center"
+      >
+        {children}
       </body>
     </html>
   );

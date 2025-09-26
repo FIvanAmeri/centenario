@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HistorialMedico } from '../entities/historial-medico.entity';
+import { Turno } from '../entities/turno.entity';
 import { Repository } from 'typeorm';
 import { EstadisticasPacienteDto } from '../dtos/estadistica-paciente.dto';
 
@@ -9,6 +10,8 @@ export class EstadisticasService {
   constructor(
     @InjectRepository(HistorialMedico)
     private readonly historialRepo: Repository<HistorialMedico>,
+    @InjectRepository(Turno)
+    private readonly turnoRepo: Repository<Turno>,
   ) {}
 
   async estadisticasPorPaciente(pacienteId: number): Promise<EstadisticasPacienteDto> {
@@ -71,5 +74,36 @@ export class EstadisticasService {
       diagnosticosFrecuentes,
       consultasPorMes,
     };
+  }
+
+  async turnosPorDia(): Promise<{ fecha: string; cantidad: number }[]> {
+    const resultados = await this.turnoRepo
+      .createQueryBuilder('t')
+      .select('DATE(t.fecha)', 'fecha')
+      .addSelect('COUNT(*)', 'cantidad')
+      .groupBy('DATE(t.fecha)')
+      .orderBy('fecha', 'ASC')
+      .getRawMany();
+
+    return resultados.map((r) => ({
+      fecha: r.fecha,
+      cantidad: parseInt(r.cantidad, 10),
+    }));
+  }
+
+  async turnosPorEspecialidad(): Promise<{ especialidad: string; cantidad: number }[]> {
+    const resultados = await this.turnoRepo
+      .createQueryBuilder('t')
+      .leftJoin('t.medico', 'medico')
+      .select('medico.especialidad', 'especialidad')
+      .addSelect('COUNT(*)', 'cantidad')
+      .groupBy('medico.especialidad')
+      .orderBy('cantidad', 'DESC')
+      .getRawMany();
+
+    return resultados.map((r) => ({
+      especialidad: r.especialidad ?? 'Sin especialidad',
+      cantidad: parseInt(r.cantidad, 10),
+    }));
   }
 }

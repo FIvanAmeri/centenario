@@ -1,51 +1,67 @@
 "use client";
-
-import { useState } from "react";
-import { useAuth } from "@/hooks/login/useAuth";
+import React from "react";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { login, loading, error } = useAuth();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await login({ email, password });
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold text-[var(--primary)] text-center">
-        Iniciar sesión
+    <div className="w-full">
+      {/* Título */}
+      <h1 className="text-3xl font-extrabold text-center text-neutral-800 mb-8">
+        Iniciar Sesión
       </h1>
 
-      <input
-        type="email"
-        placeholder="Correo institucional"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-        required
-      />
+      {/* Formulario */}
+      <form className="space-y-6">
+        {/* Correo Electrónico */}
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-semibold text-neutral-700 mb-1"
+          >
+            Correo electrónico
+          </label>
+          <input
+            type="email"
+            id="email"
+            placeholder="usuario@hospital.gob.ar"
+            className="block w-full rounded-lg border-2 border-neutral-300 px-4 py-2.5 text-neutral-900 shadow-inner focus:border-green-600 focus:ring-green-600 focus:outline-none transition duration-200"
+          />
+        </div>
 
-      <input
-        type="password"
-        placeholder="Contraseña"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-        required
-      />
+        {/* Contraseña */}
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-semibold text-neutral-700 mb-1"
+          >
+            Contraseña
+          </label>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            className="block w-full rounded-lg border-2 border-neutral-300 px-4 py-2.5 text-neutral-900 shadow-inner focus:border-green-600 focus:ring-green-600 focus:outline-none transition duration-200"
+          />
+        </div>
 
-      {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {/* Botón Principal */}
+        <button
+          type="submit"
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg hover:shadow-xl"
+        >
+          Acceder
+        </button>
+      </form>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-[var(--primary)] text-white py-2 rounded hover:bg-[var(--secondary)] transition-colors"
-      >
-        {loading ? "Ingresando..." : "Acceder"}
-      </button>
-    </form>
+      {/* Registro */}
+      <div className="mt-8 text-center">
+        <p className="text-sm text-neutral-500 mb-4">¿No tienes cuenta?</p>
+        <button
+          type="button"
+          className="w-full bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold py-2.5 px-4 rounded-lg transition-all"
+        >
+          Regístrate
+        </button>
+      </div>
+    </div>
   );
 }

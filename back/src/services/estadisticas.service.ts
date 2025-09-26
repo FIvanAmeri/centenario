@@ -1,31 +1,75 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Turno } from '../entities/turno.entity';
+import { HistorialMedico } from '../entities/historial-medico.entity';
 import { Repository } from 'typeorm';
+import { EstadisticasPacienteDto } from '../dtos/estadistica-paciente.dto';
 
 @Injectable()
 export class EstadisticasService {
-  constructor(@InjectRepository(Turno) private turnoRepo: Repository<Turno>) {}
+  constructor(
+    @InjectRepository(HistorialMedico)
+    private readonly historialRepo: Repository<HistorialMedico>,
+  ) {}
 
-  async turnosPorDia() {
-    return this.turnoRepo
-      .createQueryBuilder('turno')
-      .select('DATE(turno.fecha)', 'dia')
+  async estadisticasPorPaciente(pacienteId: number): Promise<EstadisticasPacienteDto> {
+    const totalConsultas = await this.historialRepo.count({
+      where: { historia: { paciente: { id: pacienteId } } },
+    });
+
+    const diagnosticosFrecuentes = await this.historialRepo
+      .createQueryBuilder('h')
+      .select('h.diagnostico', 'diagnostico')
       .addSelect('COUNT(*)', 'cantidad')
-      .groupBy('dia')
-      .orderBy('dia', 'DESC')
-      .limit(30)
+      .where('h.historiaId = :pacienteId', { pacienteId })
+      .groupBy('h.diagnostico')
+      .orderBy('cantidad', 'DESC')
+      .limit(5)
       .getRawMany();
+
+    const consultasPorMes = await this.historialRepo
+      .createQueryBuilder('h')
+      .select("TO_CHAR(h.fechaCreacion, 'Month YYYY')", 'mes')
+      .addSelect('COUNT(*)', 'cantidad')
+      .where('h.historiaId = :pacienteId', { pacienteId })
+      .groupBy("TO_CHAR(h.fechaCreacion, 'Month YYYY')")
+      .orderBy('mes', 'DESC')
+      .getRawMany();
+
+    return {
+      totalConsultas,
+      diagnosticosFrecuentes,
+      consultasPorMes,
+    };
   }
 
-  async turnosPorEspecialidad() {
-    return this.turnoRepo
-      .createQueryBuilder('turno')
-      .leftJoin('turno.medico', 'medico')
-      .select('medico.especialidad', 'especialidad')
+  async estadisticasPorMedico(medicoId: number): Promise<EstadisticasPacienteDto> {
+    const totalConsultas = await this.historialRepo.count({
+      where: { medico: { id: medicoId } },
+    });
+
+    const diagnosticosFrecuentes = await this.historialRepo
+      .createQueryBuilder('h')
+      .select('h.diagnostico', 'diagnostico')
       .addSelect('COUNT(*)', 'cantidad')
-      .groupBy('medico.especialidad')
+      .where('h.medicoId = :medicoId', { medicoId })
+      .groupBy('h.diagnostico')
       .orderBy('cantidad', 'DESC')
+      .limit(5)
       .getRawMany();
+
+    const consultasPorMes = await this.historialRepo
+      .createQueryBuilder('h')
+      .select("TO_CHAR(h.fechaCreacion, 'Month YYYY')", 'mes')
+      .addSelect('COUNT(*)', 'cantidad')
+      .where('h.medicoId = :medicoId', { medicoId })
+      .groupBy("TO_CHAR(h.fechaCreacion, 'Month YYYY')")
+      .orderBy('mes', 'DESC')
+      .getRawMany();
+
+    return {
+      totalConsultas,
+      diagnosticosFrecuentes,
+      consultasPorMes,
+    };
   }
 }

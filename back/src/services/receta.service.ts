@@ -68,4 +68,15 @@ export class RecetaService {
 
     return recetaFirmada;
   }
+
+  async obtenerPorPaciente(pacienteId: number): Promise<Receta[]> {
+    const paciente = await this.userRepo.findOne({ where: { id: pacienteId } });
+    if (!paciente) throw new NotFoundException('Paciente no encontrado');
+
+    return this.recetaRepo.find({
+      where: { paciente: { id: pacienteId } },
+      relations: ['medico', 'medicamentos'],
+      order: { fecha: 'DESC' },
+    });
+  }
 }

@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [usuario, loading]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-r from-green-700 to-black text-white font-[Inter]">
+    <div className="min-h-screen w-full text-white font-[Inter]">
       <div className="flex">
         <Sidebar />
 

@@ -12,14 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body
-        className="min-h-screen font-sans text-neutral-900"
-        style={{
-          backgroundImage: "linear-gradient(to bottom right, #e0f7fa, #80deea)",
-        }}
-      >
-        <div className="relative z-0">{children}</div>
+    <html lang="es" className="h-full">
+      <body className="min-h-screen font-sans text-white">
+        <div className="min-h-screen flex flex-col bg-centenario">{children}</div>
       </body>
     </html>
   );

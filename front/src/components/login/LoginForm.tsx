@@ -13,6 +13,11 @@ export default function LoginForm() {
     e.preventDefault();
     setError("");
 
+    if (!email || !password) {
+      setError("Completa todos los campos");
+      return;
+    }
+
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
         method: "POST",
@@ -27,8 +32,9 @@ export default function LoginForm() {
       }
 
       const { rol } = await res.json();
+      const rolNormalizado = rol?.toLowerCase();
 
-      switch (rol) {
+      switch (rolNormalizado) {
         case "superadmin":
           router.push("/dashboard/superadmin");
           break;
@@ -50,13 +56,13 @@ export default function LoginForm() {
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-extrabold text-center text-neutral-800 mb-8">
+      <h1 className="text-3xl font-extrabold text-center text-neutral-900 mb-8">
         Iniciar Sesión
       </h1>
 
       <form onSubmit={handleLogin} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-neutral-700 mb-1">
+          <label htmlFor="email" className="block text-sm font-semibold text-neutral-900 mb-1">
             Correo electrónico
           </label>
           <input
@@ -70,7 +76,7 @@ export default function LoginForm() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-semibold text-neutral-700 mb-1">
+          <label htmlFor="password" className="block text-sm font-semibold text-neutral-900 mb-1">
             Contraseña
           </label>
           <input
@@ -94,9 +100,10 @@ export default function LoginForm() {
       </form>
 
       <div className="mt-8 text-center">
-        <p className="text-sm text-neutral-500 mb-4">¿No tienes cuenta?</p>
+        <p className="text-sm text-neutral-900 mb-4">¿No tienes cuenta?</p>
         <button
           type="button"
+          onClick={() => router.push("/registro")}
           className="w-full bg-transparent border-2 border-green-600 text-green-600 hover:bg-green-50 font-bold py-2.5 px-4 rounded-lg transition-all"
         >
           Regístrate

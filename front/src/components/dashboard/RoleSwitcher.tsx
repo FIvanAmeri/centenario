@@ -18,7 +18,7 @@ export default function RoleSwitcher() {
     <div className="w-full p-4 bg-[var(--primary)] text-white flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div>
         <h1 className="text-lg font-semibold">{usuario.nombre}</h1>
-        <p className="text-sm">{usuario.correo}</p>
+        <p className="text-sm">{usuario.email}</p>
       </div>
       <div className="flex gap-2">
         <span className="text-sm bg-white text-[var(--primary)] px-3 py-1 rounded-full font-medium">

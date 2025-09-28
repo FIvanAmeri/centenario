@@ -1,33 +1,15 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
-  content: [
-    "./src/app/**/*.{js,ts,jsx,tsx}",
-    "./src/components/**/*.{js,ts,jsx,tsx}",
-  ],
+module.exports = {
   theme: {
     extend: {
-      colors: {
-        foreground: "rgb(var(--foreground-rgb))",
+      animation: {
+        fadeIn: "fadeIn 0.5s ease-in forwards",
       },
-      fontFamily: {
-        sans: [
-          "ui-sans-serif",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          '"Segoe UI"',
-          "Roboto",
-          '"Helvetica Neue"',
-          "Arial",
-          '"Noto Sans"',
-          "sans-serif",
-        ],
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: 0 },
+          "100%": { opacity: 1 },
+        },
       },
     },
   },
-  darkMode: "class", // 👈 si querés soportar modo oscuro
-  plugins: [],
 };
-
-export default config;

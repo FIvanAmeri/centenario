@@ -6,10 +6,8 @@ body {
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    /* ... más fuentes ... */;
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }

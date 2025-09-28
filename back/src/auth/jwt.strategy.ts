@@ -1,28 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-export interface JwtPayload {
-  sub: number;
-  email: string;
-  rol: string;
-}
+import { UserService } from '../services/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly userService: UserService) {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) throw new Error("❌ JWT_SECRET no definido");
+
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // ← usa Authorization: Bearer
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req) => {
+          const token = req?.cookies?.token;
+          console.log("📦 Token recibido:", token);
+          return token;
+        },
+      ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET ?? 'supersecreto',
+      secretOrKey: jwtSecret,
     });
   }
 
-  async validate(payload: JwtPayload): Promise<{ id: number; email: string; rol: string }> {
+  async validate(payload: { sub: number }) {
+    console.log("🔐 Payload JWT:", payload);
+    const user = await this.userService.obtener(payload.sub);
+    if (!user) throw new UnauthorizedException("Usuario no encontrado");
+
     return {
-      id: payload.sub,
-      email: payload.email,
-      rol: payload.rol,
+      id: user.id,
+      nombre: user.nombre,
+      email: user.email,
+      rol: user.rol,
+      especialidad: user.especialidad,
+      activo: user.activo,
     };
   }
 }

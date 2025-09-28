@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsEmail, IsString, IsEnum, IsOptional, IsBoolean } from 'class-validator';
 import { Rol } from '../entities/rol.enum';
 
 export class UpdateUserDto {
@@ -19,5 +19,10 @@ export class UpdateUserDto {
   rol?: Rol;
 
   @IsOptional()
+  @IsBoolean()
   activo?: boolean;
+
+  @IsOptional()
+  @IsString()
+  especialidad?: string;
 }

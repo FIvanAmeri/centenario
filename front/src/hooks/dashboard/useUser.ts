@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 interface Usuario {
   id: number;
   nombre: string;
-  correo: string;
+  email: string;
   rol: "administrativo" | "medico" | "superadmin";
+  especialidad: string | null;
+  activo: boolean;
 }
 
 export function useUser() {
@@ -17,21 +19,21 @@ export function useUser() {
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
-          {
-            method: "GET",
-            credentials: "include", // ✅ para que la cookie viaje
-          }
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+          method: "GET",
+          credentials: "include",
+        });
 
         if (!res.ok) {
+          console.error("❌ /auth/me devolvió:", res.status);
           throw new Error("No se pudo obtener el usuario");
         }
 
         const data: Usuario = await res.json();
+        console.log("🧑 Usuario cargado:", data);
         setUsuario(data);
       } catch (err) {
+        console.error("💥 Error al cargar el usuario:", err);
         setError("Error al cargar el usuario");
       } finally {
         setLoading(false);

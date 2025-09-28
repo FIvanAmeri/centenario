@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { RolesGuard } from '../auth/roles.guard';
@@ -14,6 +15,7 @@ import { Roles } from '../auth/roles.decorator';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { Rol } from '../entities/rol.enum';
+import { UserResponseDto } from '../dtos/userResponse.dto';
 
 @Controller('users')
 @UseGuards(RolesGuard)
@@ -22,37 +24,48 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async listar() {
+  async listar(): Promise<UserResponseDto[]> {
     return this.userService.listar();
   }
 
   @Get(':id')
-  async obtener(@Param('id') id: number) {
-    return this.userService.obtener(id);
+  async obtener(@Param('id', ParseIntPipe) id: number): Promise<UserResponseDto> {
+    const user = await this.userService.obtener(id);
+    return {
+      id: user.id,
+      nombre: user.nombre,
+      email: user.email,
+      rol: user.rol,
+      especialidad: user.especialidad,
+      activo: user.activo,
+    };
   }
 
   @Post()
-  async crear(@Body() body: CreateUserDto) {
+  async crear(@Body() body: CreateUserDto): Promise<UserResponseDto> {
     return this.userService.crear(body);
   }
 
   @Patch(':id')
-  async editar(@Param('id') id: number, @Body() body: UpdateUserDto) {
+  async editar(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     return this.userService.editar(id, body);
   }
 
   @Patch(':id/activar')
-  async activar(@Param('id') id: number) {
+  async activar(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userService.activar(id);
   }
 
   @Patch(':id/desactivar')
-  async desactivar(@Param('id') id: number) {
+  async desactivar(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userService.desactivar(id);
   }
 
   @Delete(':id')
-  async eliminar(@Param('id') id: number) {
+  async eliminar(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userService.eliminar(id);
   }
 }

@@ -12,14 +12,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className="w-full h-full">
+    <html lang="es">
       <body
-        className="min-h-screen w-full h-full 
-                   /* 🚨 PRUEBA DE DIAGNÓSTICO: GRADIENTE AZUL A ROJO 🚨 */
-                   bg-gradient-to-br from-blue-500 to-red-500 
-                   flex items-center justify-center"
+        className="min-h-screen font-sans text-neutral-900"
+        style={{
+          backgroundImage: "linear-gradient(to bottom right, #e0f7fa, #80deea)",
+        }}
       >
-        {children}
+        <div className="relative z-0">{children}</div>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-export type Rol = 'medico' | 'admin' | 'superadmin';
+export type Rol = 'medico' | 'administrativo' | 'superadmin';
 
 @Entity()
 export class Permiso {

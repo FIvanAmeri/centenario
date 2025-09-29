@@ -1,8 +1,8 @@
 import { IsIn, IsString, IsBoolean } from 'class-validator';
 
 export class ActualizarPermisoDto {
-  @IsIn(['medico', 'admin', 'superadmin'])
-  rol: 'medico' | 'admin' | 'superadmin';
+  @IsIn(['medico', 'administrativo', 'superadmin'])
+  rol: 'medico' | 'administrativo' | 'superadmin';
 
   @IsString()
   accion: string;

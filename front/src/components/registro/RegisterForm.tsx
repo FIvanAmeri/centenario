@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import RegisterMedicoForm from "./RegisterMedicoForm";
 
 export default function RegisterForm() {
   const [rol, setRol] = useState("");
+  const router = useRouter();
 
   return (
     <div className="space-y-6">
@@ -24,7 +26,15 @@ export default function RegisterForm() {
         </select>
       </div>
 
-      {rol === "medico" && <RegisterMedicoForm />}
+      {/* Texto "Volver atrás" */}
+      <p
+        className="text-blue-600 hover:underline cursor-pointer"
+        onClick={() => router.push("/")}
+      >
+        Volver atrás
+      </p>
+
+      {rol === "medico" && <RegisterMedicoForm onVolver={() => setRol("")} />}
     </div>
   );
 }

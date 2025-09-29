@@ -11,6 +11,7 @@ import {
   HiOutlineChartBar,
   HiOutlineCog,
   HiOutlineLogout,
+  HiOutlineEye,
 } from "react-icons/hi";
 import { JSX } from "react";
 
@@ -47,7 +48,8 @@ export default function Sidebar({ modoMovil = false }: { modoMovil?: boolean }) 
   if (rol === "superadmin") {
     items.push(
       { label: "Gestión", href: `${base}/superadmin/gestion`, icon: <HiOutlineCog /> },
-      { label: "Estadísticas", href: `${base}/superadmin/estadisticas`, icon: <HiOutlineChartBar /> }
+      { label: "Estadísticas", href: `${base}/superadmin/estadisticas`, icon: <HiOutlineChartBar /> },
+      { label: "Solicitudes", href: `${base}/solicitudes`, icon: <HiOutlineEye /> }
     );
   }
 
@@ -77,7 +79,6 @@ export default function Sidebar({ modoMovil = false }: { modoMovil?: boolean }) 
           })}
         </nav>
 
-        {/* Botón institucional de cierre de sesión */}
         <div className="p-4 flex flex-col items-center gap-2">
           <button
             onClick={logout}

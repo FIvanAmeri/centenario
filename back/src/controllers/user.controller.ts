@@ -8,7 +8,10 @@ import {
   Body,
   UseGuards,
   ParseIntPipe,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from '../services/user.service';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -16,6 +19,7 @@ import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
 import { Rol } from '../entities/rol.enum';
 import { UserResponseDto } from '../dtos/userResponse.dto';
+import type { Express } from 'express';
 
 @Controller('users')
 @UseGuards(RolesGuard)
@@ -42,8 +46,12 @@ export class UserController {
   }
 
   @Post()
-  async crear(@Body() body: CreateUserDto): Promise<UserResponseDto> {
-    return this.userService.crear(body);
+  @UseInterceptors(FileInterceptor('fotoPerfil'))
+  async crear(
+    @UploadedFile() fotoPerfil: Express.Multer.File,
+    @Body() body: CreateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.userService.crear(body, fotoPerfil);
   }
 
   @Patch(':id')

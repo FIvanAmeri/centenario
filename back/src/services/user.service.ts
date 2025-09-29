@@ -7,15 +7,55 @@ import { UpdateUserDto } from '../dtos/update-user.dto';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UserResponseDto } from '../dtos/userResponse.dto';
 import * as bcrypt from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
+import type { Express } from 'express';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepo: Repository<User>,
+    private readonly mailerService: MailerService,
+  ) {}
 
-  async crear(data: CreateUserDto): Promise<UserResponseDto> {
+  async crear(data: CreateUserDto, fotoPerfil?: Express.Multer.File): Promise<UserResponseDto> {
     const hashed = await bcrypt.hash(data.password, 10);
-    const nuevo = this.userRepo.create({ ...data, password: hashed });
+
+    const nuevo = this.userRepo.create({
+      ...data,
+      password: hashed,
+      fotoPerfil: fotoPerfil?.filename,
+      activo: data.rol === Rol.MEDICO ? false : true,
+    });
+
     const guardado = await this.userRepo.save(nuevo);
+
+    if (data.rol === Rol.MEDICO) {
+      await this.mailerService.sendMail({
+        to: data.email,
+        subject: 'Registro recibido - Hospital Centenario',
+        template: 'registro-medico-pendiente',
+        context: {
+          nombre: data.nombre,
+        },
+      });
+
+      const admins = await this.userRepo.find({
+        where: [{ rol: Rol.SUPERADMIN }, { rol: Rol.ADMINISTRATIVO }],
+      });
+
+      for (const admin of admins) {
+        await this.mailerService.sendMail({
+          to: admin.email,
+          subject: 'Nueva solicitud de médico',
+          template: 'notificacion-superadmin',
+          context: {
+            nombreMedico: data.nombre,
+            emailMedico: data.email,
+          },
+        });
+      }
+    }
+
     return this.toResponseDto(guardado);
   }
 

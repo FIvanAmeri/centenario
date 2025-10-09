@@ -1,4 +1,4 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 
 export class CrearHorarioDto {
   @IsString()
@@ -10,6 +10,7 @@ export class CrearHorarioDto {
   @IsString()
   hasta: string;
 
+  @IsOptional()
   @IsInt()
-  usuarioId: number;
+  usuarioId?: number;
 }

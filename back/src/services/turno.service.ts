@@ -63,13 +63,11 @@ export class TurnoService {
       estado: EstadoTurno.AGENDADO,
     });
 
-    await this.mailService.enviarConfirmacionTurno(
-      paciente.email,
-      dto.fecha.toISOString().split('T')[0],
-      dto.hora,
-      medico.nombre,
-      medico.rol,
-      'Hospital Centenario',
+    await this.mailService.notificarNuevoTurno(
+      paciente.email, 
+      dto.fecha.toISOString().split('T')[0],  
+      dto.hora,  
+      medico.nombre, 
     );
 
     return this.turnoRepo.save(turno);
@@ -92,10 +90,11 @@ export class TurnoService {
 
     const fechaParaCorreo = turno.fecha.toLocaleDateString('es-AR');
 
-    await this.mailService.notificarCancelacionTurno(
+   await this.mailService.notificarNuevoTurno(
       turno.paciente.email,
-      fechaParaCorreo,
-      motivo,
+      fechaParaCorreo, 
+      motivo,  
+      turno.paciente.nombre, 
     );
 
     await this.turnoRepo.remove(turno);

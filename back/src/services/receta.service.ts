@@ -34,13 +34,11 @@ export class RecetaService {
 
     const recetaGuardada = await this.recetaRepo.save(receta);
 
-    await this.mailService.enviarRecetaVirtual(
-      paciente.email,
-      paciente.nombre,
-      medico.nombre,
+    await this.mailService.notificarNuevoTurno(
+      paciente.email,                    
+      paciente.nombre,                    
+      medico.nombre,   
       recetaGuardada.fecha.toLocaleDateString('es-AR'),
-      dto.medicamentos,
-      recetaGuardada.firmada,
     );
 
     return recetaGuardada;
@@ -57,14 +55,12 @@ export class RecetaService {
     receta.firmada = true;
     const recetaFirmada = await this.recetaRepo.save(receta);
 
-    await this.mailService.enviarRecetaVirtual(
+    await this.mailService.notificarNuevoTurno(
       receta.paciente.email,
       receta.paciente.nombre,
       receta.medico.nombre,
       receta.fecha.toLocaleDateString('es-AR'),
-      receta.medicamentos,
-      receta.firmada,
-    );
+     );
 
     return recetaFirmada;
   }

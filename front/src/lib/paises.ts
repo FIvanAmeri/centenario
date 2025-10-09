@@ -19,7 +19,6 @@ const countries = [
   "India",
   "Australia",
   "Sudáfrica",
-  // podés agregar más o usar una API si querés internacional completo
 ];
 
 export default countries;

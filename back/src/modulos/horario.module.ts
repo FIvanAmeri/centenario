@@ -9,5 +9,6 @@ import { HorarioController } from '../controllers/horario.controller';
   imports: [TypeOrmModule.forFeature([Horario, User])],
   controllers: [HorarioController],
   providers: [HorarioService],
+  exports: [HorarioService],
 })
 export class HorarioModule {}

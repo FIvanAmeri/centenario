@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,7 +23,20 @@ async function bootstrap() {
     credentials: true,
   });
 
+  const config = new DocumentBuilder()
+    .setTitle('IA2-GE Sistemas - API') 
+    .setDescription('API central para la gestión de proyectos de sistemas (2 Iván, 2 Agustín, Emi).')
+    .setVersion('1.0')
+    .addTag('sistemas')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  
+  SwaggerModule.setup('docs', app, document);
+
+
   await app.listen(port);
   console.log(`🚀 Backend Centenario corriendo en http://localhost:${port}`);
+  console.log(`📖 Documentación Swagger disponible en http://localhost:${port}/docs`); 
 }
 bootstrap();

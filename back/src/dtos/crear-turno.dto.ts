@@ -1,10 +1,10 @@
 import { IsInt, Matches, IsDateString } from 'class-validator';
-import { Type } from 'class-transformer'; // <-- Importación necesaria
+import { Type } from 'class-transformer'; 
 
 export class CrearTurnoDto {
   @IsDateString()
-  @Type(() => Date) // <-- Convierte la cadena de fecha a un objeto Date
-  fecha: Date;      // <-- El tipo ahora es Date
+  @Type(() => Date) 
+  fecha: Date;     
 
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
     message: 'La hora debe estar en formato HH:mm',

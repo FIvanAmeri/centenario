@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import especialidades from "@/lib/especialidades/especialidades";
 import { FormularioMedico } from "@/types/medico";

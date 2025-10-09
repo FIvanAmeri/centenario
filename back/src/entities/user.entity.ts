@@ -1,6 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { Rol } from './rol.enum';
 
+
+type EspecialidadType = string[] | null; 
+
 @Entity({ name: 'user' })
 export class User {
   @PrimaryGeneratedColumn()
@@ -22,12 +25,26 @@ export class User {
   })
   rol: Rol;
 
-  @Column({ nullable: true })
-  especialidad?: string;
+
+  @Column({ 
+    type: 'jsonb', 
+    nullable: true 
+  })
+  especialidad: EspecialidadType;
 
   @Column({ default: true })
   activo: boolean;
 
-  @Column({ nullable: true })
-  fotoPerfil?: string;
+
+  @Column({ 
+    type: 'varchar', 
+    nullable: true 
+  })
+  fotoPerfil: string | null;
+
+
+  @Column({ 
+    unique: true
+  })
+  dni: string;
 }

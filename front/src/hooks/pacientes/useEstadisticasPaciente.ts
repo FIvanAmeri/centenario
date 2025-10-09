@@ -35,11 +35,10 @@ export function useEstadisticasPaciente(pacienteId: string) {
         const mesMap = new Map<string, number>();
 
         data.forEach((h) => {
-          // Diagnóstico
           const diag = h.diagnostico.trim();
           diagnosticoMap.set(diag, (diagnosticoMap.get(diag) || 0) + 1);
 
-          // Mes
+
           const mes = new Date(h.fecha).toLocaleString("default", {
             month: "long",
             year: "numeric",

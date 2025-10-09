@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { EntidadModule } from './entidad.module';
 import { UserModule } from './modulos/user.module';
-import { AuthModule } from './modulos/auth.module'; // ← agregalo acá
+import { AuthModule } from './modulos/auth.module';
 
 @Module({
   imports: [
@@ -16,11 +16,11 @@ import { AuthModule } from './modulos/auth.module'; // ← agregalo acá
       password: process.env.DB_PASSWORD ?? 'password',
       database: process.env.DB_NAME ?? 'centenario',
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
     }),
     EntidadModule,
     UserModule,
-    AuthModule, // ← esto registra /auth/login
+    AuthModule, 
   ],
 })
 export class AppModule {}

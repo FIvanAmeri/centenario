@@ -8,7 +8,6 @@ export default function SolicitudesMedico() {
   const [pendientes, setPendientes] = useState<UserResponseDto[]>([]);
   const [seleccionado, setSeleccionado] = useState<UserResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
   const cargarSolicitudes = async () => {
@@ -17,22 +16,23 @@ export default function SolicitudesMedico() {
       const data: UserResponseDto[] = await res.json();
       const filtrados = data.filter((u) => u.rol === "medico" && u.activo === false);
       setPendientes(filtrados);
-    } catch (err) {
-      setError("No se pudieron cargar las solicitudes");
+    } catch {
     } finally {
       setLoading(false);
     }
   };
 
-  const manejarAccion = async (id: number, activar: boolean) => {
+  const manejarAccion = async (id: number, aprobado: boolean) => {
     try {
-      const endpoint = `${process.env.NEXT_PUBLIC_API_URL}/users/${id}/${activar ? "activar" : "desactivar"}`;
-      const res = await fetch(endpoint, { method: "PATCH" });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}/aprobacion`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ aprobado }),
+      });
       if (!res.ok) throw new Error("Error en la acción");
       setPendientes((prev) => prev.filter((u) => u.id !== id));
       setSeleccionado(null);
     } catch {
-      setError("No se pudo actualizar el estado del médico");
     }
   };
 
@@ -56,8 +56,11 @@ export default function SolicitudesMedico() {
     <div className="relative">
       <h2 className="text-xl font-bold mb-4 text-white">Solicitudes de médicos</h2>
       {loading && <p className="text-white">Cargando...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      {pendientes.length === 0 && !loading && <p className="text-white">No hay solicitudes pendientes.</p>}
+      {pendientes.length === 0 && !loading && (
+        <div className="bg-white/10 border border-white/20 rounded-lg p-4 text-white text-sm italic">
+          No hay solicitudes pendientes en este momento.
+        </div>
+      )}
 
       <ul className="space-y-4">
         {pendientes.map((medico) => (

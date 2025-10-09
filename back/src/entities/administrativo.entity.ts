@@ -9,7 +9,7 @@ export class Administrativo {
   nombre: string;
 
   @Column({ type: 'varchar', length: 50 })
-  area: string; // menú desplegable, validado en el DTO
+  area: string; 
 
   @Column({ type: 'json' })
   diasTrabajo: { dia: string; horaInicio: string; horaFin: string }[];
@@ -24,7 +24,7 @@ export class Administrativo {
   direccion: string;
 
   @Column({ type: 'int' })
-  edad: number; // se calcula automáticamente en el service
+  edad: number;
 
   @Column({ type: 'varchar', length: 20, unique: true })
   dni: string;

@@ -7,13 +7,13 @@ export class Horario {
   id: number;
 
   @Column()
-  dia: string; // ej: 'lunes', 'martes'
+  dia: string;
 
   @Column()
-  desde: string; // ej: '08:00'
+  desde: string;
 
   @Column()
-  hasta: string; // ej: '14:00'
+  hasta: string;
 
   @ManyToOne(() => User)
   usuario: User;

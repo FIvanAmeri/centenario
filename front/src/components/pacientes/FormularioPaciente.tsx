@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCrearPaciente } from "@/hooks/pacientes/useCrearPaciente";
-import countries from "@/lib/paises"; // lista de países
+import countries from "@/lib/paises";
 
 const provincias = ["Santa Fe", "Buenos Aires", "Córdoba"];
 const ciudades = ["Rosario", "Santa Fe Capital", "Villa María"];

@@ -9,5 +9,5 @@ export interface FormularioMedico {
   matricula: string;
   password: string;
   repetirPassword: string;
-  fotoPerfil: File | null;  // 👈 cambio acá
+  fotoPerfil: File | null; 
 }

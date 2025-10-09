@@ -1,12 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+import type { SendMailOptions } from 'nodemailer';
 
 @Injectable()
 export class MailService {
+  private readonly logger = new Logger(MailService.name);
+
   constructor(private readonly mailerService: MailerService) {}
 
-  async enviarBienvenida(email: string, nombre: string) {
-    await this.mailerService.sendMail({
+  private async safeSend(options: SendMailOptions & { template?: string; context?: Record<string, unknown> }): Promise<void> {
+    try {
+      await this.mailerService.sendMail(options as any);
+      this.logger.log(`📨 Mail enviado a ${options.to} con asunto "${options.subject}"`);
+    } catch (err) {
+      this.logger.error(`💥 Error enviando mail a ${options.to}`, (err as Error).message);
+      }
+  }
+
+  async sendMail(options: SendMailOptions & { template?: string; context?: Record<string, unknown> }): Promise<void> {
+    return this.safeSend(options);
+  }
+
+  async enviarBienvenida(email: string, nombre: string): Promise<void> {
+    await this.safeSend({
       to: email,
       subject: 'Bienvenido a Hospital Centenario',
       template: 'bienvenida',
@@ -14,8 +30,8 @@ export class MailService {
     });
   }
 
-  async notificarRespuestaSuperadmin(email: string, aprobado: boolean) {
-    await this.mailerService.sendMail({
+  async notificarRespuestaSuperadmin(email: string, aprobado: boolean): Promise<void> {
+    await this.safeSend({
       to: email,
       subject: 'Estado de tu registro en Hospital Centenario',
       template: 'respuesta-superadmin',
@@ -23,114 +39,57 @@ export class MailService {
     });
   }
 
-  async enviarConfirmacionTurno(
-    email: string,
-    fecha: string,
-    hora: string,
-    medico: string,
-    especialidad: string,
-    ubicacion: string,
-  ) {
-    await this.mailerService.sendMail({
+  async notificarNuevoTurno(email: string, nombre: string, fecha: string, hora: string): Promise<void> {
+    await this.safeSend({
       to: email,
-      subject: 'Confirmación de turno',
-      template: 'turno-confirmado',
-      context: { fecha, hora, medico, especialidad, ubicacion },
+      subject: 'Nuevo turno agendado',
+      template: 'nuevo-turno',
+      context: { nombre, fecha, hora },
     });
   }
 
-  async notificarCancelacionTurno(email: string, fecha: string, motivo: string) {
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Cancelación de turno',
-      template: 'turno-cancelado',
-      context: { fecha, motivo },
-    });
-  }
-
-  async notificarReprogramacionTurno(
-    email: string,
-    nuevaFecha: string,
-    nuevaHora: string,
-    medico: string,
-    motivo: string,
-  ) {
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Reprogramación de turno',
-      template: 'turno-reprogramado',
-      context: { nuevaFecha, nuevaHora, medico, motivo },
-    });
-  }
-
-  async enviarRecordatorioTurno(
-    email: string,
-    nombrePaciente: string,
-    fecha: Date,
-    hora: string,
-    medico: string,
-    especialidad: string,
-  ) {
-    const fechaString = fecha.toLocaleDateString('es-AR');
-
-    await this.mailerService.sendMail({
+  async notificarRecordatorioTurno(email: string, nombre: string, fecha: string, hora: string): Promise<void> {
+    await this.safeSend({
       to: email,
       subject: 'Recordatorio de turno',
-      template: 'emails/recordatorio-turno',
-      context: {
-        nombre: nombrePaciente,
-        fecha: fechaString,
-        hora,
-        medico,
-        especialidad,
-      },
+      template: 'recordatorio-turno',
+      context: { nombre, fecha, hora },
     });
   }
 
-  async enviarRecetaVirtual(
-    email: string,
-    paciente: string,
-    medico: string,
-    fecha: string,
-    medicamentos: { nombre: string; dosis: string; frecuencia: string }[],
-    firmada: boolean,
-  ) {
-    await this.mailerService.sendMail({
+  async notificarTurnoCancelado(email: string, nombre: string, fecha: string, hora: string): Promise<void> {
+    await this.safeSend({
       to: email,
-      subject: 'Receta médica digital - Hospital Centenario',
-      template: 'receta-virtual',
-      context: {
-        paciente,
-        medico,
-        fecha,
-        medicamentos,
-        firmada,
-      },
+      subject: 'Cancelación de turno',
+      template: 'cancelacion-turno',
+      context: { nombre, fecha, hora },
     });
   }
 
-  async enviarHistoriaClinicaExportada(
-    email: string,
-    paciente: string,
-    fechaExportacion: string,
-    registros: {
-      fecha: string;
-      motivoConsulta: string;
-      diagnostico: string;
-      tratamiento: string;
-      medico: string;
-      firmado: boolean;
-    }[],
-  ) {
-    await this.mailerService.sendMail({
+  async notificarTurnoReprogramado(email: string, nombre: string, fecha: string, hora: string, nuevaFecha: string, nuevaHora: string): Promise<void> {
+    await this.safeSend({
       to: email,
-      subject: 'Exportación de historia clínica - Hospital Centenario',
-      template: 'historia-clinica-exportada',
-      context: {
-        paciente,
-        fechaExportacion,
-        registros,
-      },
+      subject: 'Reprogramación de turno',
+      template: 'reprogramacion-turno',
+      context: { nombre, fecha, hora, nuevaFecha, nuevaHora },
+    });
+  }
+
+  async notificarSolicitudMedico(email: string, nombre: string): Promise<void> {
+    await this.safeSend({
+      to: email,
+      subject: 'Registro recibido - Hospital Centenario',
+      template: 'registro-medico-pendiente',
+      context: { nombre },
+    });
+  }
+
+  async notificarSuperadminsNuevoMedico(email: string, nombreMedico: string, emailMedico: string): Promise<void> {
+    await this.safeSend({
+      to: email,
+      subject: 'Nueva solicitud de médico',
+      template: 'notificacion-superadmin',
+      context: { nombreMedico, emailMedico },
     });
   }
 }

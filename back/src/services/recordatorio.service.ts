@@ -15,13 +15,11 @@ export class RecordatorioService {
         const turnos = await this.turnoService.obtenerTurnosEn48Horas(); 
 
         for (const turno of turnos) {
-            await this.mailerService.enviarRecordatorioTurno(
+            await this.mailerService.notificarRecordatorioTurno(
                 turno.paciente.email,
                 turno.paciente.nombre,
-                turno.fecha, 
+                turno.fecha.toLocaleDateString('es-AR'), 
                 turno.hora,
-                turno.medico.nombre,
-                turno.medico.especialidad || 'No especificada', 
             );
         }
     }

@@ -26,7 +26,12 @@ export default function useFormularioMedico() {
     useHorarioSelector() as {
       horarios: Horarios;
       agregarHorario: (dia: string) => void;
-      actualizarHorario: (dia: string, index: number, campo: "inicio" | "fin", valor: string) => void;
+      actualizarHorario: (
+        dia: string,
+        index: number,
+        campo: "inicio" | "fin",
+        valor: string
+      ) => void;
       eliminarHorario: (dia: string, index: number) => void;
     };
 

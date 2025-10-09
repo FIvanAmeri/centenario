@@ -1,24 +1,83 @@
-import { IsEmail, IsString, IsEnum, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsBoolean,
+  IsArray,
+  ValidateNested,
+  IsNotEmpty,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { Rol } from '../entities/rol.enum';
 
+export class HorarioDto {
+  @IsString()
+  @IsNotEmpty()
+  dia: string;
+
+  @IsString()
+  @IsNotEmpty()
+  desde: string;
+
+  @IsString()
+  @IsNotEmpty()
+  hasta: string;
+
+  @IsOptional()
+  usuarioId?: number;
+}
+
 export class CreateUserDto {
-  @IsString()
-  nombre: string;
+  @IsString()
+  @IsNotEmpty()
+  nombre: string;
 
-  @IsEmail()
-  email: string;
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
-  @IsString()
-  password: string;
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 
-  @IsEnum(Rol)
-  rol: Rol;
+  @IsEnum(Rol)
+  @IsNotEmpty()
+  rol: Rol;
 
-  @IsOptional()
-  @IsBoolean()
-  activo?: boolean;
+  @IsString()
+  @IsNotEmpty()
+  dni: string;
 
-  @IsOptional()
-  @IsString()
-  especialidad?: string; // 🚨 Para reflejar el nuevo campo
+  @IsString()
+  @IsNotEmpty()
+  fechaNacimiento: string;
+
+  @IsString()
+  @IsNotEmpty()
+  telefono: string;
+
+  @IsString()
+  @IsNotEmpty()
+  direccion: string;
+
+
+  @IsOptional()
+  @IsString()
+  matricula?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  activo?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  especialidad?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => HorarioDto)
+  horarios?: HorarioDto[];
 }

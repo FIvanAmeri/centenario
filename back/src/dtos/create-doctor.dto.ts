@@ -23,13 +23,13 @@ export class CreateDoctorDto {
   @IsNotEmpty()
   matricula: string;
 
-  @IsPhoneNumber('AR') // ajustado para Argentina
+  @IsPhoneNumber('AR')
   telefono: string;
 
   @IsArray()
   @ArrayNotEmpty()
   @IsString({ each: true })
-  diasTrabajo: string[]; // Ej: ['Lunes', 'Martes']
+  diasTrabajo: string[];
 
   @IsOptional()
   @IsString()

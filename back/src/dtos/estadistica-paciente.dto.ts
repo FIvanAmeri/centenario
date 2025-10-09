@@ -7,7 +7,7 @@ export class EstadisticasPacienteDto {
   }[];
 
   consultasPorMes: {
-    mes: string; // Ej: "Septiembre 2025"
+    mes: string;
     cantidad: number;
   }[];
 }

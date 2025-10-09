@@ -12,34 +12,36 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async login(email: string, password: string): Promise<{ access_token: string; rol: string }> {
+
+  async validateUser(email: string, password: string): Promise<User | null> {
     console.log('🔍 Buscando usuario por email:', email);
     const usuario = await this.userRepo.findOne({ where: { email } });
 
-    if (!usuario) {
-      console.warn('⛔ Usuario no encontrado');
-      throw new UnauthorizedException('Usuario no encontrado');
-    }
-
-    if (!usuario.activo) {
-      console.warn('⛔ Usuario inactivo');
-      throw new UnauthorizedException('Usuario inactivo');
+    if (!usuario || !usuario.activo) {
+      console.warn('⛔ Usuario no encontrado o inactivo');
+      return null;
     }
 
     if (!usuario.password) {
       console.error('❌ Password no definido en base');
-      throw new UnauthorizedException('Contraseña no disponible');
+      return null;
     }
 
     console.log('🔐 Comparando contraseña...');
     const coincide = await bcrypt.compare(password, usuario.password);
-    console.log('✅ ¿Contraseña coincide?', coincide);
-
+    
     if (!coincide) {
       console.warn('⛔ Contraseña incorrecta');
-      throw new UnauthorizedException('Contraseña incorrecta');
+      return null;
     }
+    
+  
+    const { password: _, ...result } = usuario;
+    return result as User;
+  }
 
+
+  async login(usuario: User): Promise<{ access_token: string; rol: string }> {
     const payload = {
       sub: usuario.id,
       email: usuario.email,
@@ -49,7 +51,6 @@ export class AuthService {
 
     console.log('🧾 Generando token con payload:', payload);
     const access_token = this.jwtService.sign(payload);
-    console.log('🎫 Token generado correctamente');
 
     return {
       access_token,

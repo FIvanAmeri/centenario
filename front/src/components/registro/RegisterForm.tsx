@@ -26,7 +26,6 @@ export default function RegisterForm() {
         </select>
       </div>
 
-      {/* Texto "Volver atrás" */}
       <p
         className="text-blue-600 hover:underline cursor-pointer"
         onClick={() => router.push("/")}

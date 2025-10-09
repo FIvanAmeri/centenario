@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import useFormularioMedico from "@/hooks/registerMedico/useFormularioMedico";
 import useValidacionMedico from "@/hooks/registerMedico/useValidacionMedico";
 
@@ -11,7 +11,9 @@ import CamposAgenda from "@/components/registerMedico/CamposAgenda";
 import CamposPassword from "@/components/registerMedico/CamposPassword";
 import BotonSubmit from "@/components/registerMedico/BotonSubmit";
 
-// Declaramos los props del componente
+import { CrearHorarioDto } from "@/types/CrearHorarioDto";
+import { BloqueHorario } from "@/hooks/HorarioSector/useHorarioSector";
+
 interface Props {
   onVolver: () => void;
 }
@@ -36,9 +38,13 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
 
   const { validar } = useValidacionMedico();
 
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorGlobal("");
+    setSuccessMsg(null);
 
     const nuevosErrores = validar(form, horarios);
 
@@ -47,6 +53,17 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
       setErrorGlobal("Completa todos los campos obligatorios");
       return;
     }
+
+    const diasTrabajo: CrearHorarioDto[] = Object.entries(horarios).flatMap(
+      ([dia, bloques]: [string, BloqueHorario[]]) =>
+        bloques.map((bloque): CrearHorarioDto => {
+          return {
+            dia,
+            desde: bloque.inicio,
+            hasta: bloque.fin,
+          };
+        })
+    );
 
     const payload = new FormData();
     payload.append("nombre", form.nombre);
@@ -59,31 +76,40 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
     payload.append("matricula", form.matricula);
     payload.append("password", form.password);
     payload.append("rol", "medico");
-    payload.append("diasTrabajo", JSON.stringify(horarios));
+    payload.append("horarios", JSON.stringify(diasTrabajo));
     if (form.fotoPerfil) payload.append("fotoPerfil", form.fotoPerfil);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+      setLoading(true);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register-medico`, {
         method: "POST",
         body: payload,
       });
 
+      const body = await res.json();
+
       if (!res.ok) {
-        const { message } = await res.json();
-        setErrorGlobal(message || "Error al registrar médico");
+        setErrorGlobal(body?.message || "Error al registrar médico");
+        setLoading(false);
         return;
       }
 
-      router.push("/login");
+      setSuccessMsg(body?.message || "Registro recibido. Revisa tu email.");
+      setLoading(false);
+
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 4000); 
     } catch (err) {
       console.error("💥 Error de conexión:", err);
       setErrorGlobal("Error de conexión con el servidor");
+      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-neutral-900">
-      {/* Nombre */}
       <div>
         <label className="block text-sm font-medium mb-1">Nombre completo</label>
         <input
@@ -101,7 +127,6 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
         {errores.nombre && <p className="text-red-600 text-sm">{errores.nombre}</p>}
       </div>
 
-      {/* Foto */}
       <CampoFoto
         setForm={setForm}
         setPreviewUrl={setPreviewUrl}
@@ -110,17 +135,14 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
         previewUrl={previewUrl}
       />
 
-      {/* Campos */}
       <FormularioCampos form={form} errores={errores} handleChange={handleChange} />
 
-      {/* Especialidad */}
       <CampoEspecialidad
         value={form.especialidad}
         errores={errores}
         handleChange={handleChange}
       />
 
-      {/* Agenda */}
       <CamposAgenda
         horarios={horarios}
         actualizarHorario={actualizarHorario}
@@ -128,7 +150,6 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
         agregarHorario={agregarHorario}
       />
 
-      {/* Password */}
       <CamposPassword form={form} errores={errores} handleChange={handleChange} />
 
       {errores.horarios && (
@@ -136,17 +157,24 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
       )}
       {errorGlobal && <p className="text-red-600 text-sm text-center">{errorGlobal}</p>}
 
-      {/* Botón de enviar */}
-      <BotonSubmit />
 
-      {/* Botón para volver a la selección de rol */}
-      <button
-        type="button"
-        onClick={onVolver}
-        className="w-full bg-gray-500 text-white font-bold py-2.5 rounded-lg transition-all shadow hover:shadow-md hover:bg-gray-600"
-      >
-        Volver a la selección de rol
-      </button>
+      {successMsg && (
+        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-green-800">
+          {successMsg}
+        </div>
+      )}
+
+
+      <div className="flex flex-col gap-4">
+        <BotonSubmit />
+        <button
+          type="button"
+          onClick={onVolver}
+          className="w-full bg-gray-500 text-white font-bold py-2.5 rounded-lg transition-all shadow hover:shadow-md hover:bg-gray-600"
+        >
+          Volver a la selección de rol
+        </button>
+      </div>
     </form>
   );
 }

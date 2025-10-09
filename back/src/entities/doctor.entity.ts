@@ -18,7 +18,7 @@ export class Doctor {
   telefono: string;
 
   @Column({ type: 'simple-array' })
-  diasTrabajo: string[]; // Ejemplo: ['Lunes', 'Miércoles', 'Viernes']
+  diasTrabajo: string[]; 
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   fotoPerfil?: string;

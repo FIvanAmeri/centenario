@@ -50,17 +50,16 @@ export class ReprogramacionService {
       throw new BadRequestException('La nueva hora está fuera del horario permitido');
     }
 
- 
+  
     turno.fecha = nuevaFechaDate;
     turno.hora = nuevaHora;
 
-   
-    await this.mailService.notificarReprogramacionTurno(
-      turno.paciente.email,
-      nuevaFecha, 
-      nuevaHora,
+    
+    await this.mailService.notificarNuevoTurno( 
+      turno.paciente.email, 
+      nuevaFecha,  
+      nuevaHora, 
       turno.medico.nombre,
-      motivo,
     );
 
     await this.auditoriaService.registrar(

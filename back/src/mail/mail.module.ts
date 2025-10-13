@@ -2,12 +2,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'; 
 
 @Module({
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.tu-servidor.com',
+        host: 'smtp.tu-servidor.com', 
         port: 587,
         auth: {
           user: 'tu-correo@hospital.com',
@@ -19,7 +20,7 @@ import { join } from 'path';
       },
       template: {
         dir: join(__dirname, 'templates'),
-        adapter: new (require('handlebars'))(),
+        adapter: new HandlebarsAdapter(), 
         options: {
           strict: true,
         },

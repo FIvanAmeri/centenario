@@ -12,7 +12,7 @@ interface Usuario {
   activo: boolean;
 }
 
-d
+
 export function useUser() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);

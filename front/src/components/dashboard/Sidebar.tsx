@@ -25,14 +25,16 @@ export default function Sidebar({ modoMovil = false }: { modoMovil?: boolean }) 
 
   const sidebarClasses = `fixed top-[50px] left-0 h-[calc(100vh-50px)] bg-transparent border-r border-white/20 z-50 w-60 sm:w-64 md:w-72 ${modoMovil ? "" : "hidden md:block"}`;
 
-  if (loading || !usuario) {
+  if (loading) {
     return (
       <aside className={`${sidebarClasses} p-6`}>
-        <div className={`text-sm ${error ? "text-red-400" : "text-white/50"}`}>
-          {error ? "Sesión expirada o error de carga." : "Cargando menú..."}
-        </div>
+        <div className="text-sm text-white/50">Cargando menú...</div>
       </aside>
     );
+  }
+
+  if (!usuario || error) {
+    return null; 
   }
 
   const base = "/dashboard";
@@ -107,4 +109,4 @@ export default function Sidebar({ modoMovil = false }: { modoMovil?: boolean }) 
       </div>
     </aside>
   );
-}   
+}

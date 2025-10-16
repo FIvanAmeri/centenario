@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { join } from 'path';
 import * as dotenv from 'dotenv'; 
 dotenv.config();
 
@@ -10,7 +11,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT ?? 3001;
 
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
+
   app.use(cookieParser());
+
+
+  app.use('/uploads', (await import('express')).static(join(process.cwd(), 'uploads')));
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -19,11 +28,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-
-  app.enableCors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  });
 
   const config = new DocumentBuilder()
     .setTitle('IA2-GE Sistemas - API')

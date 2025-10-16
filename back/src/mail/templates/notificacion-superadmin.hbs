@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Cancelación de turno</title>
+    <title>Nueva Solicitud de Registro</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -24,10 +24,6 @@
         padding: 20px;
         text-align: center;
       }
-      .header img {
-        max-width: 100px;
-        margin-bottom: 10px;
-      }
       .header h1 {
         color: #fff;
         font-size: 22px;
@@ -45,28 +41,23 @@
         text-align: center;
         color: #777;
       }
-      a {
-        color: #005c99;
-        text-decoration: none;
-      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <img src="https://hospitalcentenario.gov.ar/uploads/centenario.webp" alt="Hospital Centenario" />
-        <h1>Cancelación de turno</h1>
+        <h1>Nueva Solicitud de Registro</h1>
       </div>
       <div class="body">
         <p>Hola,</p>
-        <p>Lamentamos informarte que tu turno ha sido cancelado por razones administrativas.</p>
-        <p><strong>Fecha original:</strong> {{fecha}}</p>
-        <p><strong>Motivo:</strong> {{motivo}}</p>
-        <p>Este horario ha sido liberado en la agenda institucional.</p>
-        <p>Si necesitás reprogramar o tenés alguna consulta, <a href="mailto:dark.ranked@gmail.com">escribinos</a>.</p>
+        <p>Se ha recibido una nueva solicitud de registro en la plataforma del Hospital Centenario con los siguientes datos:</p>
+        <p><strong>Nombre:</strong> {{nombreUsuario}}</p>
+        <p><strong>Email:</strong> {{emailUsuario}}</p>
+        <p><strong>Rol Solicitado:</strong> {{rol}}</p>
+        <p>Por favor, ingresa al panel de administración para revisar y aprobar o rechazar la solicitud.</p>
       </div>
       <div class="footer">
-        Hospital Centenario · Urquiza 3101 · Rosario · Santa Fe · Argentina
+        Este es un correo electrónico generado automáticamente.
       </div>
     </div>
   </body>

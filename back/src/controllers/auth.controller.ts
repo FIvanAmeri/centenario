@@ -75,7 +75,6 @@ export class AuthController {
 
 
     @Post('register')
-    @UsePipes()
     @UseInterceptors(FileInterceptor('fotoPerfil'))
     async register(
         @UploadedFile() fotoPerfil: Express.Multer.File,

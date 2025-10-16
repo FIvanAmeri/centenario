@@ -49,6 +49,9 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+ 
+    setLoading(true); 
     setErrorMsg(null);
     setSuccessMsg(null);
 
@@ -57,6 +60,7 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(nuevosErrores);
       setErrorMsg("Completa todos los campos obligatorios");
+      setLoading(false); 
       return;
     }
 
@@ -76,7 +80,7 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
     payload.append("fechaNacimiento", form.fechaNacimiento);
     payload.append("especialidad", form.especialidad);
     payload.append("telefono", form.telefono);
-    payload.append("direccion", form.direccion);
+    payload.append("domicilio", form.direccion);
     payload.append("matricula", form.matricula);
     payload.append("password", form.password);
     payload.append("rol", "medico");
@@ -84,7 +88,6 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
     if (form.fotoPerfil) payload.append("fotoPerfil", form.fotoPerfil);
 
     try {
-      setLoading(true);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: "POST",
         body: payload,
@@ -93,7 +96,7 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
       const body = await res.json();
 
       if (!res.ok) {
-        setErrorMsg(body?.message || "Ocurrió un error al intentar registrar al médico.");
+         setErrorMsg(body?.message || "Ocurrió un error al intentar registrar al médico.");
         setLoading(false);
         return;
       }
@@ -102,7 +105,7 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
       setLoading(false);
 
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 4000);
     } catch (err) {
       console.error("💥 Error de conexión:", err);

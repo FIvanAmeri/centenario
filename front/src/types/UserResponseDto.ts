@@ -2,7 +2,7 @@ export interface UserResponseDto {
   id: number;
   nombre: string;
   email: string;
-  rol: "medico" | "administrativo" | "superadmin";
-  especialidad?: string;
+  rol: string;
+  especialidad: string[] | string | null;
   activo: boolean;
 }

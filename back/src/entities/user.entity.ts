@@ -4,18 +4,18 @@ import { Rol } from './rol.enum';
 
 type EspecialidadType = string[] | null; 
 
-@Entity({ name: 'user' })
+@Entity({ name: 'users' }) 
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true }) 
   nombre: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true }) 
   email: string;
 
-  @Column()
+  @Column({ nullable: true }) 
   password: string;
 
   @Column({
@@ -44,7 +44,8 @@ export class User {
 
 
   @Column({ 
-    unique: true
+    unique: true,
+    nullable: true 
   })
   dni: string;
 }

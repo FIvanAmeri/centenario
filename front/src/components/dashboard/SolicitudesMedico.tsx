@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { UserResponseDto } from "@/types/UserResponseDto";
 import { HiEye, HiX, HiCheckCircle, HiXCircle } from "react-icons/hi";
 
@@ -22,21 +22,22 @@ export default function SolicitudesMedico() {
     return `Rol: ${usuario.rol}`;
   };
 
-  const cargarSolicitudes = async () => {
+  const cargarSolicitudes = useCallback(async () => {
     setLoading(true);
     setErrorApi(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/pendientes`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/solicitudes/pendientes`, { 
         credentials: 'include', 
       });
 
       if (!res.ok) {
-        throw new Error("No se pudieron cargar las solicitudes.");
+        const errorText = await res.text();
+        throw new Error(`Error ${res.status} ${res.statusText}. Detalle: ${errorText.substring(0, 100)}...`);
       }
 
-      const data = await res.json();
+      const data = await res.json() as UserResponseDto[];
       if (Array.isArray(data)) {
-        setPendientes(data as UserResponseDto[]);
+        setPendientes(data);
       } else {
         setPendientes([]);
       }
@@ -46,9 +47,9 @@ export default function SolicitudesMedico() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const manejarAccion = async (id: number, aprobado: boolean) => {
+  const manejarAccion = useCallback(async (id: number, aprobado: boolean) => {
     setErrorApi(null);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}/aprobacion`, {
@@ -66,9 +67,9 @@ export default function SolicitudesMedico() {
     } catch (error) {
       setErrorApi(error instanceof Error ? error.message : "Ocurrió un error inesperado.");
     }
-  };
+  }, []);
 
-  const cerrarModal = () => setSeleccionado(null);
+  const cerrarModal = useCallback(() => setSeleccionado(null), []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -78,11 +79,11 @@ export default function SolicitudesMedico() {
     };
     if (seleccionado) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [seleccionado]);
+  }, [seleccionado, cerrarModal]);
 
   useEffect(() => {
     cargarSolicitudes();
-  }, []);
+  }, [cargarSolicitudes]);
 
   return (
     <div className="relative">

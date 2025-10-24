@@ -38,6 +38,13 @@ export class UserController {
     return this.userService.listar();
   }
 
+  @Get('solicitudes/pendientes') 
+  @UseGuards(GuardiaJwt, RolesGuard)
+  @Roles(Rol.SUPERADMIN)
+  async listarPendientes(): Promise<UserResponseDto[]> {
+    return this.userService.listarPendientes();
+  }
+
   @Get(':id')
   @UseGuards(GuardiaJwt, RolesGuard)
   @Roles(Rol.SUPERADMIN)
@@ -62,13 +69,6 @@ export class UserController {
     @Body() body: CreateUserDto,
   ): Promise<UserResponseDto> {
     return this.userService.crear(body, fotoPerfil);
-  }
-
-  @Get('pendientes')
-  @UseGuards(GuardiaJwt, RolesGuard)
-  @Roles(Rol.SUPERADMIN)
-  async listarPendientes(): Promise<UserResponseDto[]> {
-    return this.userService.listarPendientes();
   }
 
   @Patch(':id')

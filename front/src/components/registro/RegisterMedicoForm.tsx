@@ -81,7 +81,7 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
 
     try {
       setLoading(true);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register-medico`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: "POST",
         body: payload,
       });

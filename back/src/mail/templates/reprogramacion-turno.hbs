@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Reprogramación de Turno</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        padding: 0;
+        margin: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+      .header {
+        background-color: #005c99;
+        padding: 20px;
+        text-align: center;
+      }
+      .header h1 {
+        color: #fff;
+        font-size: 22px;
+        margin: 0;
+      }
+      .body {
+        padding: 30px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .footer {
+        background-color: #f0f0f0;
+        padding: 20px;
+        font-size: 14px;
+        text-align: center;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Tu turno ha sido reprogramado</h1>
+      </div>
+      <div class="body">
+        <p>Hola, {{nombre}}.</p>
+        <p>Te informamos que tu turno del día {{fecha}} a las {{hora}} ha sido reprogramado con éxito.</p>
+        <p><strong>Nueva Fecha:</strong> {{nuevaFecha}}</p>
+        <p><strong>Nueva Hora:</strong> {{nuevaHora}}</p>
+        <p>Te esperamos en el nuevo horario.</p>
+      </div>
+      <div class="footer">
+        Hospital Centenario · Urquiza 3101 · Rosario · Santa Fe · Argentina
+      </div>
+    </div>
+  </body>
+</html>

@@ -11,6 +11,8 @@ import CamposAgenda from "@/components/registerMedico/CamposAgenda";
 import CamposPassword from "@/components/registerMedico/CamposPassword";
 import BotonSubmit from "@/components/registerMedico/BotonSubmit";
 
+import AlertMessage from "@/components/registro/AlertMessage";
+
 import { CrearHorarioDto } from "@/types/CrearHorarioDto";
 import { BloqueHorario } from "@/hooks/HorarioSector/useHorarioSector";
 
@@ -40,29 +42,35 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
 
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const REGISTRO_EXITOSO_MSG =
+    "¡Registro exitoso! Su cuenta ha sido creada y está bajo revisión. Se envió una notificación a su correo electrónico con los pasos a seguir. Por favor, revise su bandeja de entrada (y la carpeta de spam).";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorGlobal("");
+    
+ 
+    setLoading(true); 
+    setErrorMsg(null);
     setSuccessMsg(null);
 
     const nuevosErrores = validar(form, horarios);
 
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(nuevosErrores);
-      setErrorGlobal("Completa todos los campos obligatorios");
+      setErrorMsg("Completa todos los campos obligatorios");
+      setLoading(false); 
       return;
     }
 
     const diasTrabajo: CrearHorarioDto[] = Object.entries(horarios).flatMap(
       ([dia, bloques]: [string, BloqueHorario[]]) =>
-        bloques.map((bloque): CrearHorarioDto => {
-          return {
-            dia,
-            desde: bloque.inicio,
-            hasta: bloque.fin,
-          };
-        })
+        bloques.map((bloque): CrearHorarioDto => ({
+          dia,
+          desde: bloque.inicio,
+          hasta: bloque.fin,
+        }))
     );
 
     const payload = new FormData();
@@ -72,7 +80,7 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
     payload.append("fechaNacimiento", form.fechaNacimiento);
     payload.append("especialidad", form.especialidad);
     payload.append("telefono", form.telefono);
-    payload.append("direccion", form.direccion);
+    payload.append("domicilio", form.direccion);
     payload.append("matricula", form.matricula);
     payload.append("password", form.password);
     payload.append("rol", "medico");
@@ -89,27 +97,45 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
       const body = await res.json();
 
       if (!res.ok) {
-        setErrorGlobal(body?.message || "Error al registrar médico");
+         setErrorMsg(body?.message || "Ocurrió un error al intentar registrar al médico.");
         setLoading(false);
         return;
       }
 
-      setSuccessMsg(body?.message || "Registro recibido. Revisa tu email.");
+      setSuccessMsg(REGISTRO_EXITOSO_MSG);
       setLoading(false);
 
-
       setTimeout(() => {
-        router.push("/login");
-      }, 4000); 
+        router.push("/");
+      }, 4000);
     } catch (err) {
       console.error("💥 Error de conexión:", err);
-      setErrorGlobal("Error de conexión con el servidor");
+      setErrorMsg("Error de conexión con el servidor. Intenta nuevamente.");
       setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-neutral-900">
+      {successMsg && (
+        <AlertMessage
+          message={successMsg}
+          type="success"
+          onClose={() => setSuccessMsg(null)}
+        />
+      )}
+      {errorMsg && (
+        <AlertMessage
+          message={errorMsg}
+          type="error"
+          onClose={() => setErrorMsg(null)}
+        />
+      )}
+
+      {errores.horarios && (
+        <p className="text-red-600 text-sm text-center">{errores.horarios}</p>
+      )}
+
       <div>
         <label className="block text-sm font-medium mb-1">Nombre completo</label>
         <input
@@ -155,18 +181,9 @@ export default function RegisterMedicoForm({ onVolver }: Props) {
       {errores.horarios && (
         <p className="text-red-600 text-sm text-center">{errores.horarios}</p>
       )}
-      {errorGlobal && <p className="text-red-600 text-sm text-center">{errorGlobal}</p>}
-
-
-      {successMsg && (
-        <div className="rounded-md bg-green-50 border border-green-200 p-3 text-green-800">
-          {successMsg}
-        </div>
-      )}
-
 
       <div className="flex flex-col gap-4">
-        <BotonSubmit />
+        <BotonSubmit loading={loading} />
         <button
           type="button"
           onClick={onVolver}

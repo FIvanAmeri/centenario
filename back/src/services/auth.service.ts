@@ -12,7 +12,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-
   async validateUser(email: string, password: string): Promise<User | null> {
     console.log('🔍 Buscando usuario por email:', email);
     const usuario = await this.userRepo.findOne({ where: { email } });
@@ -29,17 +28,15 @@ export class AuthService {
 
     console.log('🔐 Comparando contraseña...');
     const coincide = await bcrypt.compare(password, usuario.password);
-    
+
     if (!coincide) {
       console.warn('⛔ Contraseña incorrecta');
       return null;
     }
-    
-  
+
     const { password: _, ...result } = usuario;
     return result as User;
   }
-
 
   async login(usuario: User): Promise<{ access_token: string; rol: string }> {
     const payload = {
@@ -51,6 +48,7 @@ export class AuthService {
 
     console.log('🧾 Generando token con payload:', payload);
     const access_token = this.jwtService.sign(payload);
+    console.log('📦 Token generado:', access_token); 
 
     return {
       access_token,

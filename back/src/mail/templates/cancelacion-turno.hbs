@@ -2,7 +2,7 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Confirmación de turno</title>
+    <title>Cancelación de turno</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -55,17 +55,13 @@
     <div class="container">
       <div class="header">
         <img src="https://hospitalcentenario.gov.ar/uploads/centenario.webp" alt="Hospital Centenario" />
-        <h1>Tu turno ha sido confirmado</h1>
+        <h1>Cancelación de turno</h1>
       </div>
       <div class="body">
-        <p>Hola,</p>
-        <p>Te confirmamos que tu turno ha sido registrado correctamente en el sistema institucional.</p>
-        <p><strong>Fecha:</strong> {{fecha}}</p>
-        <p><strong>Hora:</strong> {{hora}}</p>
-        <p><strong>Profesional:</strong> Dr./Dra. {{medico}}</p>
-        <p><strong>Especialidad:</strong> {{especialidad}}</p>
-        <p>Por favor, presentate con tu DNI en recepción <strong>15 minutos antes</strong> del horario asignado.</p>
-        <p>Si necesitás modificar o cancelar tu turno, <a href="mailto:dark.ranked@gmail.com">escribinos</a>.</p>
+        <p>Hola, {{nombre}}.</p>
+        <p>Lamentamos informarte que tu turno del día {{fecha}} a las {{hora}} ha sido cancelado.</p>
+        <p>Este horario ha sido liberado en la agenda institucional.</p>
+        <p>Si necesitás reprogramar o tenés alguna consulta, <a href="mailto:dark.ranked@gmail.com">escribinos</a>.</p>
       </div>
       <div class="footer">
         Hospital Centenario · Urquiza 3101 · Rosario · Santa Fe · Argentina

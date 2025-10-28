@@ -2,22 +2,27 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import type { SendMailOptions } from 'nodemailer';
 
+type MailOptions = SendMailOptions & {
+  template?: string;
+  context?: Record<string, unknown>;
+};
+
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
 
   constructor(private readonly mailerService: MailerService) {}
 
-  private async safeSend(options: SendMailOptions & { template?: string; context?: Record<string, unknown> }): Promise<void> {
+  private async safeSend(options: MailOptions): Promise<void> {
     try {
-      await this.mailerService.sendMail(options as any);
+      await this.mailerService.sendMail(options);
       this.logger.log(`📨 Mail enviado a ${options.to} con asunto "${options.subject}"`);
     } catch (err) {
       this.logger.error(`💥 Error enviando mail a ${options.to}`, (err as Error).message);
-      }
+    }
   }
 
-  async sendMail(options: SendMailOptions & { template?: string; context?: Record<string, unknown> }): Promise<void> {
+  async sendMail(options: MailOptions): Promise<void> {
     return this.safeSend(options);
   }
 
@@ -66,7 +71,14 @@ export class MailService {
     });
   }
 
-  async notificarTurnoReprogramado(email: string, nombre: string, fecha: string, hora: string, nuevaFecha: string, nuevaHora: string): Promise<void> {
+  async notificarTurnoReprogramado(
+    email: string,
+    nombre: string,
+    fecha: string,
+    hora: string,
+    nuevaFecha: string,
+    nuevaHora: string,
+  ): Promise<void> {
     await this.safeSend({
       to: email,
       subject: 'Reprogramación de turno',
@@ -84,7 +96,11 @@ export class MailService {
     });
   }
 
-  async notificarSuperadminsNuevoMedico(email: string, nombreMedico: string, emailMedico: string): Promise<void> {
+  async notificarSuperadminsNuevoMedico(
+    email: string,
+    nombreMedico: string,
+    emailMedico: string,
+  ): Promise<void> {
     await this.safeSend({
       to: email,
       subject: 'Nueva solicitud de médico',
